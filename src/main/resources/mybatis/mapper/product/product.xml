@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="product.product">
+	
+	<select id="getProducts" parameterType="map" resultType="ProductVO">
+		SELECT product_no as productNo
+			, state_cd as stateCd
+			, (SELECT state_nm FROM state WHERE state_cd = p.state_cd) as stateNm
+			, category_no as categoryNo
+			, (SELECT category_nm FROM category WHERE category_no = p.category_no) as categoryNm
+			, title as title
+			, content as content
+			, price as price
+			, reg_emp_no as regEmpNo
+			, reg_dtt as regDtt
+			, bump_dtt as bumpDtt
+			, view_cnt as viewCnt
+			, like_cnt as likeCnt
+		FROM product p
+		WHERE use_yn = 'Y'
+		ORDER BY p.product_no DESC
+	</select>
+	
+	<select id="getProduct" parameterType="map" resultType="ProductVO">
+		SELECT product_no as productNo
+			, state_cd as stateCd
+			, (SELECT state_nm FROM state WHERE state_cd = p.state_cd) as stateNm
+			, category_no as categoryNo
+			, (SELECT category_nm FROM category WHERE category_no = p.category_no) as categoryNm
+			, title as title
+			, content as content
+			, price as price
+			, reg_emp_no as regEmpNo
+			, (SELECT emp_nm FROM emp WHERE emp_no = p.reg_emp_no) as regEmpNm
+			, (
+				SELECT d.dept_nm
+				FROM emp e
+					INNER JOIN dept d
+						ON e.dept_cd = d.dept_cd
+				WHERE e.emp_no = reg_emp_no) as regDeptNm
+			, reg_dtt as regDtt
+			, bump_dtt as bumpDtt
+			, view_cnt as viewCnt
+			, like_cnt as likeCnt
+		FROM product p
+		WHERE use_yn = 'Y'
+			AND product_no = #{productNo}
+	</select>
+	
+	<insert id="insertProduct" parameterType="map" useGeneratedKeys="true" keyProperty="productNo">
+		INSERT INTO product (
+			state_cd
+			, category_no
+			, title
+			, content
+			, price
+			, reg_emp_no
+			, reg_dtt
+			, bump_dtt
+			, view_cnt
+			, like_cnt
+			, use_yn
+		)
+		VALUES (
+			#{stateCd}
+			, #{categoryNo}
+			, #{title}
+			, #{content}
+			, #{price}
+			, #{regEmpNo}
+			, NOW()
+			, NOW()
+			, 0
+			, 0
+			, 'Y'
+		)
+	</insert>
+	
+	<select id="getCategories" parameterType="map" resultType="CategoryVO">
+		SELECT category_no as categoryNo
+			, category_nm as categoryNm
+		FROM category c
+		WHERE c.use_yn = 'Y'
+		ORDER BY category_no ASC
+	</select>
+	
+	<select id="getStates" parameterType="map" resultType="StateVO">
+		SELECT state_cd as stateCd
+			, state_nm as stateNm
+		FROM state s
+		WHERE s.use_yn = 'Y'
+		ORDER BY state_cd ASC
+	</select>
+	
+</mapper>

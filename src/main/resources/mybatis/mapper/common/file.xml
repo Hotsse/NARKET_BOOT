@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common.file">
+	
+	<select id="getImgs" parameterType="map" resultType="ImgVO">
+		SELECT img_no as imgNo
+			, product_no as productNo
+			, file_path as filePath
+			, file_nm as filePath
+			, file_size as fileSize
+			, reg_dtt as regDtt
+		FROM img
+		WHERE product_no = #{productNo}
+	</select>
+	
+	<select id="getImg" parameterType="map" resultType="ImgVO">
+		SELECT img_no as imgNo
+			, product_no as productNo
+			, file_path as filePath
+			, file_nm as filePath
+			, file_size as fileSize
+			, reg_dtt as regDtt
+		FROM img
+		WHERE product_no = #{productNo}
+			AND img_no = #{imgNo}
+	</select>
+	
+	<insert id="insertImg" parameterType="map">
+		INSERT INTO img (
+			product_no
+			, file_path
+			, file_nm
+			, file_size
+			, reg_dtt
+		)
+		VALUES (
+			#{productNo}
+			, #{filePath}
+			, #{fileNm}
+			, #{fileSize}
+			, NOW()
+		)
+	</insert>
+	
+</mapper>

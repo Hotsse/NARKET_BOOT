@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>넥슨장터</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<style>
+	/* Remove the navbar's default rounded borders and increase the bottom margin */ 
+	.navbar {
+		margin-bottom: 50px;
+		border-radius: 0;
+	}
+	
+	/* Remove the jumbotron's default bottom margin */ 
+	.jumbotron {
+		margin-bottom: 0;
+	}
+	
+	/* Add a gray background color and some padding to the footer */
+	footer {
+		background-color: #f2f2f2;
+		padding: 25px;
+	}
+	</style>
+</head>
+<body>
+
+<script type="text/javascript">
+var getProducts = ()=>{
+	$.get(`/api/product/list`)
+	.done((data) => {
+		console.log(data);
+		$("#productListTmpl").tmpl(data).appendTo("#productList");
+	});
+}
+
+var getProduct = (productNo)=>{
+	$.get(`/api/product/list/${productNo}`)
+	.done((data) => {
+		console.log(data);
+		$("#productView").empty();
+		$("#productViewTmpl").tmpl(data).appendTo("#productView");
+		
+		$("#productImgList").empty();
+		$("#productImgListTmpl").tmpl(data).appendTo("#productImgList");
+		$("#productImgList").carousel(0);
+		
+		$("#productModal").modal("hide");
+		$("#productModal").modal("show");
+	});
+}
+
+$(document).ready(()=>{
+	getProducts();	
+})
+</script>
+
+<script id="productListTmpl" type="text/x-jquery-tmpl">
+<div class="col-sm-4" onclick="getProduct(${productNo});">
+	<div class="panel">
+		<div class="panel-body">
+			<img src="/api/product/img/${productNo}/${imgNos[0]}" class="img-responsive" style="width:100%; height:170px;" onerror="this.src='https://placehold.it/150x80?text=IMAGE';">
+		</div>
+		<div class="panel-footer">${title}</div>
+	</div>
+</div>
+</script>
+
+<script id="productImgListTmpl" type="text/x-jquery-tmpl">
+<ol class="carousel-indicators">
+	{{each(index,imgNo) imgNos}}
+	<li data-target="#productImgList" data-slide-to="${index}"></li>
+	{{/each}}
+</ol>
+			
+<div class="carousel-inner">
+	{{each(index,imgNo) imgNos}}
+	<div class="item {{if index == 0}}active{{/if}}">
+		<img src="/api/product/img/${productNo}/${imgNo}" alt="IMGAGE" style="width:100%;">
+	</div>
+	{{/each}}
+</div>
+			
+<a class="left carousel-control" href="#productImgList" data-slide="prev">
+	<span class="glyphicon glyphicon-chevron-left"></span>
+	<span class="sr-only">Previous</span>
+</a>
+<a class="right carousel-control" href="#productImgList" data-slide="next">
+	<span class="glyphicon glyphicon-chevron-right"></span>
+	<span class="sr-only">Next</span>
+</a>
+</script>
+
+<script id="productViewTmpl" type="text/x-jquery-tmpl">
+<hr>
+<p style="float:left;">
+	<img src="https://placehold.it/150x80?text=face" style="width:40px; height:40px; border-radius:50%;">
+</p>
+<p style="margin-left:50px;">
+	<b>${regEmpNm}</b><br>
+	<small>${regDeptNm}</small>
+</p>
+<hr>
+
+<p>
+	<b>${title}</b><br>
+	<small>${categoryNm} · ${bumpDtt}</small>
+</p>
+<p>${content}</p>
+</script>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="javascript:;">상품</a></li>
+        <li><a href="/web/product/write">글쓰기</a></li>
+        <li><a href="/web/myhome">내 정보</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="glyphicon glyphicon-search"></span> 검색</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">    
+  <div id="productList" class="row">
+  </div>
+</div><br>
+
+<footer class="container-fluid text-center">
+  <p>Online Store Copyright</p>  
+  <form class="form-inline">Get deals:
+    <input type="email" class="form-control" size="50" placeholder="Email Address">
+    <button type="button" class="btn btn-danger">Sign Up</button>
+  </form>
+</footer>
+
+<!-- Modal -->
+<div class="modal fade" id="productModal" role="dialog">
+	<div class="modal-dialog modal-lg">
+  
+		<!-- Modal content-->
+		<div class="modal-content">
+	    
+			<div class="modal-body">
+	      	
+				<div id="productImgList" class="carousel slide" data-ride="carousel"></div>
+			
+				<div id="productView"></div>
+	
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default btn-primary">채팅하기</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">뒤로</button>
+			</div>
+		</div>
+    
+	</div>
+</div>
+
+</body>
+</html>

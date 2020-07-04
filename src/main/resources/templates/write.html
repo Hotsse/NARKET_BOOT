@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>넥슨장터</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<style>
+	/* Remove the navbar's default rounded borders and increase the bottom margin */ 
+	.navbar {
+		margin-bottom: 50px;
+		border-radius: 0;
+	}
+	
+	/* Remove the jumbotron's default bottom margin */ 
+	.jumbotron {
+		margin-bottom: 0;
+	}
+	
+	/* Add a gray background color and some padding to the footer */
+	footer {
+		background-color: #f2f2f2;
+		padding: 25px;
+	}
+	</style>
+</head>
+<body>
+
+<script type="text/javascript">
+var getCategories = ()=>{
+	$.get(`/api/product/category`)
+	.done((data) => {
+		console.log(data);
+		$("#categoryListTmpl").tmpl(data).appendTo("#categoryList");
+	});
+}
+
+var getStates = ()=>{
+	$.get(`/api/product/state`)
+	.done((data) => {
+		console.log(data);
+		$("#stateListTmpl").tmpl(data).appendTo("#stateList");
+	});
+}
+
+var submitWriteForm = ()=>{
+	
+	var form = $('#writeForm')[0];
+    var formData = new FormData(form);
+    
+	$.ajax({
+		type: "POST",
+		enctype: 'multipart/form-data',
+		url: "/api/product/write",
+		data: formData,
+		processData: false,
+		contentType: false,
+		cache: false,
+		success: function (data) {
+			console.log(data);
+			console.log("success");
+        },
+        error: function (e) {
+			console.log("ERROR : ", e);
+        }
+    });
+}
+
+$(document).ready(()=>{
+	getCategories();
+	// getStates();
+})
+</script>
+
+<script id="categoryListTmpl" type="text/x-jquery-tmpl">
+<option value="${categoryNo}">${categoryNm}</option>
+</script>
+
+<script id="stateListTmpl" type="text/x-jquery-tmpl">
+<option value="${stateCd}">${stateNm}</option>
+</script>
+
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>                        
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavbar">
+			<ul class="nav navbar-nav">
+				<li><a href="/web/product/list">상품</a></li>
+				<li class="active"><a href="javascript:;">글쓰기</a></li>
+				<li><a href="/web/myhome">내 정보</a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#"><span class="glyphicon glyphicon-search"></span> 검색</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div class="container">    
+	<div class="row">
+		<form id="writeForm" enctype="multipart/form-data">
+			<div class="form-group">
+				<input type="file" name="imgs" class="form-control" multiple />
+			</div>
+			<div class="form-group">
+				<input type="text" name="title" class="form-control" placeholder="제목" />
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="categoryList" name="categoryNo">
+					<option value="">카테고리</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<input type="number" name="price" class="form-control" placeholder="￦ 가격" min="0" />
+			</div>
+			<div class="form-group">
+				<textarea name="content" class="form-control" rows="15" placeholder="게시글 내용을 작성해주세요. 판매금지품목은 게시가 제한될 수 있어요."></textarea>
+			</div>
+			<button class="btn btn-default">완료</button>
+		</form>
+	</div>
+</div>
+
+</body>
+</html>
