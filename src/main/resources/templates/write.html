@@ -61,7 +61,8 @@ var submitWriteForm = ()=>{
 		cache: false,
 		success: function (data) {
 			console.log(data);
-			console.log("success");
+			alert("상품을 등록했습니다 :)");
+			window.location.href="/web/product/list";
         },
         error: function (e) {
 			console.log("ERROR : ", e);
@@ -125,7 +126,7 @@ $(document).ready(()=>{
 			<div class="form-group">
 				<textarea name="content" class="form-control" rows="15" placeholder="게시글 내용을 작성해주세요. 판매금지품목은 게시가 제한될 수 있어요."></textarea>
 			</div>
-			<button class="btn btn-default">완료</button>
+			<button class="btn btn-default" onclick="javascript:submitWriteForm(); return false;">완료</button>
 		</form>
 	</div>
 </div>
