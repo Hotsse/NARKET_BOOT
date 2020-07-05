@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>넥슨장터</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<style>
+	/* Remove the navbar's default rounded borders and increase the bottom margin */ 
+	.navbar {
+		margin-bottom: 50px;
+		border-radius: 0;
+	}
+	
+	/* Remove the jumbotron's default bottom margin */ 
+	.jumbotron {
+		margin-bottom: 0;
+	}
+	
+	/* Add a gray background color and some padding to the footer */
+	footer {
+		background-color: #f2f2f2;
+		padding: 25px;
+	}
+	</style>
+</head>
+<body>
+
+<script type="text/javascript">
+var getSellProducts = ()=>{
+	$.get(`/api/product/list/sell`)
+	.done((data) => {
+		console.log(data);
+		$("#productListTmpl").tmpl(data).appendTo("#productList");
+	});
+}
+
+$(document).ready(()=>{
+	getSellProducts();
+})
+</script>
+
+<script id="productListTmpl" type="text/x-jquery-tmpl">
+<div class="col-sm-4" onclick="getProduct(${productNo});">
+	<div class="panel">
+		<div class="panel-body">
+			<img src="/api/product/img/${productNo}/${imgNos[0]}" class="img-responsive" style="width:100%; height:170px;"
+				onerror="this.src='https://placehold.it/150x80?text=IMAGE';">
+		</div>
+		<div class="panel-footer">${title}</div>
+	</div>
+</div>
+</script>
+
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>                        
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavbar">
+			<ul class="nav navbar-nav">
+				<li><a href="/web/product/list">상품</a></li>
+				<li class="active"><a href="javascript:;">글쓰기</a></li>
+				<li><a href="/web/myhome">내 정보</a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#"><span class="glyphicon glyphicon-search"></span> 검색</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div class="container">
+	<div id="productList" class="row"></div>
+</div>
+
+</body>
+</html>

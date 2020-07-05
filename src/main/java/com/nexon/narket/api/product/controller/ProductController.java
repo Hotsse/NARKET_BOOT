@@ -92,4 +92,13 @@ public class ProductController extends BaseController {
 		
 		this.fileService.downloadImg(productNo, imgNo, res);
 	}
+	
+	@GetMapping("/list/sell")
+	public List<ProductVO> getSellProducts(HttpServletRequest req) throws Exception {
+		// 작성자 데이터 추가
+		HttpSession session = req.getSession();
+		String empNo = session.getAttribute("empNo").toString();
+		
+		return this.productService.getSellProducts(empNo, StateEnum.INPROGRESS.getCode());
+	}
 }

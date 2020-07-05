@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>넥슨장터</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<style>
+	/* Remove the navbar's default rounded borders and increase the bottom margin */ 
+	.navbar {
+		margin-bottom: 50px;
+		border-radius: 0;
+	}
+	
+	/* Remove the jumbotron's default bottom margin */ 
+	.jumbotron {
+		margin-bottom: 0;
+	}
+	
+	/* Add a gray background color and some padding to the footer */
+	footer {
+		background-color: #f2f2f2;
+		padding: 25px;
+	}
+	</style>
+</head>
+<body>
+
+<script type="text/javascript">
+var getCategories = ()=>{
+	$.get(`/api/product/category`)
+	.done((data) => {
+		console.log(data);
+		$("#categoryListTmpl").tmpl(data).appendTo("#categoryList");
+	});
+}
+
+var getStates = ()=>{
+	$.get(`/api/product/state`)
+	.done((data) => {
+		console.log(data);
+		$("#stateListTmpl").tmpl(data).appendTo("#stateList");
+	});
+}
+
+var submitWriteForm = ()=>{
+	
+	var form = $('#writeForm')[0];
+    var formData = new FormData(form);
+    
+	$.ajax({
+		type: "POST",
+		enctype: 'multipart/form-data',
+		url: "/api/product/write",
+		data: formData,
+		processData: false,
+		contentType: false,
+		cache: false,
+		success: function (data) {
+			console.log(data);
+			alert("상품을 등록했습니다 :)");
+			window.location.href="/web/product/list";
+        },
+        error: function (e) {
+			console.log("ERROR : ", e);
+        }
+    });
+}
+
+$(document).ready(()=>{
+	
+})
+</script>
+
+<script id="categoryListTmpl" type="text/x-jquery-tmpl">
+<option value="${categoryNo}">${categoryNm}</option>
+</script>
+
+<script id="stateListTmpl" type="text/x-jquery-tmpl">
+<option value="${stateCd}">${stateNm}</option>
+</script>
+
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>                        
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavbar">
+			<ul class="nav navbar-nav">
+				<li><a href="/web/product/list">상품</a></li>
+				<li class="active"><a href="javascript:;">글쓰기</a></li>
+				<li><a href="/web/myhome">내 정보</a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#"><span class="glyphicon glyphicon-search"></span> 검색</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div class="container">    
+	<div class="row">
+	
+		<div class="col-sm-12">
+			<hr>
+			<p style="float:left;">
+				<img src="https://placehold.it/150x80?text=face" style="width:40px; height:40px; border-radius:50%;">
+			</p>
+			<p style="margin-left:50px;">
+				<b>윤호세</b><br>
+				<small>재무그룹웨어팀</small>
+			</p>
+			<hr>
+		</div>		
+	</div>
+	<div class="row" style="text-align:center; font-size:16px;">
+		<div class="col-sm-4">
+			<p><span class="glyphicon glyphicon-list-alt"></span></p>
+			<p>판매내역</p>
+		</div>
+		<div class="col-sm-4">
+			<p><span class="glyphicon glyphicon-shopping-cart"></span></p>
+			<p>구매내역</p>			
+		</div>
+		<div class="col-sm-4">
+			<p><span class="glyphicon glyphicon-heart"></span></p>
+			<p>관심목록</p>			
+		</div>
+	</div>
+	
+	<div class="row" style="margin-top:15px; font-size:16px;">
+		<div class="col-sm-12">
+			<p>의미 없는 옵션1</p>
+		</div>
+		<div class="col-sm-12">
+			<p>의미 없는 옵션2</p>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

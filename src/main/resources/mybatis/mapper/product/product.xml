@@ -19,7 +19,7 @@
 			, like_cnt as likeCnt
 		FROM product p
 		WHERE use_yn = 'Y'
-		ORDER BY p.product_no DESC
+		ORDER BY p.bump_dtt DESC
 	</select>
 	
 	<select id="getProduct" parameterType="map" resultType="ProductVO">
@@ -91,6 +91,27 @@
 		FROM state s
 		WHERE s.use_yn = 'Y'
 		ORDER BY state_cd ASC
+	</select>
+	
+	<select id="getSellProducts" parameterType="map" resultType="ProductVO">
+		SELECT product_no as productNo
+			, state_cd as stateCd
+			, (SELECT state_nm FROM state WHERE state_cd = p.state_cd) as stateNm
+			, category_no as categoryNo
+			, (SELECT category_nm FROM category WHERE category_no = p.category_no) as categoryNm
+			, title as title
+			, content as content
+			, price as price
+			, reg_emp_no as regEmpNo
+			, reg_dtt as regDtt
+			, bump_dtt as bumpDtt
+			, view_cnt as viewCnt
+			, like_cnt as likeCnt
+		FROM product p
+		WHERE use_yn = 'Y'
+			AND reg_emp_no = #{empNo}
+			AND state_cd = #{stateCd}
+		ORDER BY p.bump_dtt DESC
 	</select>
 	
 </mapper>

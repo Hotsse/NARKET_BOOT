@@ -75,5 +75,23 @@ public class ProductService extends BaseService {
 		
 		return result;
 	}
+	
+	public List<ProductVO> getSellProducts(String empNo, String stateCd) throws Exception {
+		List<ProductVO> products = this.productDao.getSellProducts(empNo, stateCd);
+		
+		if(products != null) {
+			for(ProductVO product : products) {
+				ProductVO origin = product;
+				
+				List<ImgVO> imgs = this.fileService.getImgs(product.getProductNo());
+				List<Integer> imgNos = this.convertImgsToIntList(imgs);
+				product.setImgNos(imgNos);
+				products.set(products.indexOf(origin), product);
+			}
+			
+		}
+		
+		return products; 
+	}
 
 }

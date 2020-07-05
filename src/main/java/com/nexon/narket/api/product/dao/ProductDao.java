@@ -36,4 +36,12 @@ public class ProductDao extends BaseDao {
 	public List<StateVO> getStates() throws Exception {
 		return sqlSession.selectList("product.product.getStates");
 	}
+	
+	public List<ProductVO> getSellProducts(String empNo, String stateCd) throws Exception {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("empNo", empNo);
+		param.put("stateCd", stateCd);
+		
+		return sqlSession.selectList("product.product.getSellProducts", param);
+	}
 }
