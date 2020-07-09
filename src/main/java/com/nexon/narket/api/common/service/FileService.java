@@ -102,6 +102,7 @@ public class FileService {
 			this.fileDao.insertImg(newImg);
 		}
 		
+		
 	}
 	
 	
