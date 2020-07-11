@@ -77,6 +77,33 @@
 		)
 	</insert>
 	
+	<update id="updateProduct" parameterType="map">
+		UPDATE product
+		SET use_yn = 'Y'
+			<if test="stateCd != null"> 
+			, state_cd = #{stateCd}
+			</if>
+			<if test="categoryNo != null">
+			, category_no = #{categoryNo}
+			</if>
+			<if test="title != null">
+			, title = #{title}
+			</if>
+			<if test="content != null">
+			, content = #{content}
+			</if>
+			<if test="price != null">
+			, price = #{price}
+			</if>
+		WHERE product_no = #{productNo}
+	</update>
+	
+	<update id="deleteProduct" parameterType="map">
+		UPDATE product
+		SET use_yn = 'N'
+		WHERE product_no = #{productNo}
+	</update>
+	
 	<select id="getCategories" parameterType="map" resultType="CategoryVO">
 		SELECT category_no as categoryNo
 			, category_nm as categoryNm
@@ -110,7 +137,7 @@
 		FROM product p
 		WHERE use_yn = 'Y'
 			AND reg_emp_no = #{empNo}
-			AND state_cd = #{stateCd}
+			AND state_cd in ('100001', '100002')
 		ORDER BY p.bump_dtt DESC
 	</select>
 	

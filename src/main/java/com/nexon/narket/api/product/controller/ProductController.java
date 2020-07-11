@@ -7,10 +7,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,6 +74,41 @@ public class ProductController extends BaseController {
 		return ResponseEntity.created(null).build();
 	}
 	
+	@PostMapping("/update")
+	public ResponseEntity<ProductVO> update(ProductVO product, HttpServletRequest req) throws Exception {
+		
+		int productNo = product.getProductNo(); 
+		ProductVO origin = this.productService.getProduct(productNo);
+		// 권한 체크
+		HttpSession session = req.getSession();
+		String empNo = session.getAttribute("empNo").toString();
+		if(!origin.getRegEmpNo().equals(empNo)) {
+			// 권한 부적합
+			return new ResponseEntity<ProductVO>(HttpStatus.FORBIDDEN);
+		}
+		
+		this.productService.updateProduct(product);
+		ProductVO result = this.productService.getProduct(productNo);
+		
+		return ResponseEntity.ok(result);
+	}
+	
+	@PostMapping("/delete/{productNo}")
+	public ResponseEntity<Void> delete(@PathVariable(name = "productNo", required = true) int productNo, HttpServletRequest req) throws Exception {
+		
+		ProductVO product = this.productService.getProduct(productNo);
+		// 권한 체크
+		HttpSession session = req.getSession();
+		String empNo = session.getAttribute("empNo").toString();
+		if(!product.getRegEmpNo().equals(empNo)) {
+			// 권한 부적합
+			return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+		}
+		
+		this.productService.deleteProduct(productNo);
+		return ResponseEntity.ok(null);
+	}
+	
 	@GetMapping("/category")
 	public ResponseEntity<List<CategoryVO>> getCategories() throws Exception {
 		
@@ -99,6 +137,6 @@ public class ProductController extends BaseController {
 		HttpSession session = req.getSession();
 		String empNo = session.getAttribute("empNo").toString();
 		
-		return this.productService.getSellProducts(empNo, StateEnum.INPROGRESS.getCode());
+		return this.productService.getSellProducts(empNo);
 	}
 }

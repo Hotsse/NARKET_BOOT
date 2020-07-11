@@ -29,6 +29,17 @@ public class ProductDao extends BaseDao {
 		return sqlSession.insert("product.product.insertProduct", product);
 	}
 	
+	public int updateProduct(ProductVO product) throws Exception {
+		return sqlSession.update("product.product.updateProduct", product);
+	}
+	
+	public int deleteProduct(int productNo) throws Exception {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("productNo", productNo);
+		
+		return sqlSession.update("product.product.deleteProduct", param);
+	}
+	
 	public List<CategoryVO> getCategories() throws Exception {
 		return sqlSession.selectList("product.product.getCategories");
 	}
@@ -37,10 +48,9 @@ public class ProductDao extends BaseDao {
 		return sqlSession.selectList("product.product.getStates");
 	}
 	
-	public List<ProductVO> getSellProducts(String empNo, String stateCd) throws Exception {
+	public List<ProductVO> getSellProducts(String empNo) throws Exception {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("empNo", empNo);
-		param.put("stateCd", stateCd);
 		
 		return sqlSession.selectList("product.product.getSellProducts", param);
 	}

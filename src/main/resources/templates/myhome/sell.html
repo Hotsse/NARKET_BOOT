@@ -34,7 +34,19 @@ var getSellProducts = ()=>{
 	$.get(`/api/product/list/sell`)
 	.done((data) => {
 		console.log(data);
+		$("#productList").empty();
 		$("#productListTmpl").tmpl(data).appendTo("#productList");
+	});
+}
+
+var updateProductStateCd = (productNo, stateCd)=>{
+	$.post(`/api/product/update`,{
+		productNo: productNo
+		, stateCd: stateCd
+	})
+	.done((data) => {
+		console.log(data);
+		getSellProducts();
 	});
 }
 
@@ -51,6 +63,15 @@ $(document).ready(()=>{
 				onerror="this.src='https://placehold.it/150x80?text=IMAGE';">
 		</div>
 		<div class="panel-footer">${title}</div>
+		<div class="panel-footer" style="text-align:center;">
+			{{if stateCd == "100001"}}
+			<button class="btn btn-secondary" onclick="updateProductStateCd(${productNo}, '100002')">예약 중으로 변경</button>
+			<button class="btn btn-secondary" onclick="updateProductStateCd(${productNo}, '100003')">거래 완료로 변경</button>
+			{{else [stateCd == "100002"]}}
+			<button class="btn btn-secondary" onclick="updateProductStateCd(${productNo}, '100001')">판매 중으로 변경</button>
+			<button class="btn btn-secondary" onclick="updateProductStateCd(${productNo}, '100003')">거래 완료로 변경</button>
+			{{/if}}
+		</div>
 	</div>
 </div>
 </script>
@@ -67,8 +88,8 @@ $(document).ready(()=>{
 		<div class="collapse navbar-collapse" id="myNavbar">
 			<ul class="nav navbar-nav">
 				<li><a href="/web/product/list">상품</a></li>
-				<li class="active"><a href="javascript:;">글쓰기</a></li>
-				<li><a href="/web/myhome">내 정보</a></li>
+				<li><a href="/web/product/write">글쓰기</a></li>
+				<li class="active"><a href="javascript:;">내 정보</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li><a href="#"><span class="glyphicon glyphicon-search"></span> 검색</a></li>
