@@ -62,6 +62,14 @@ public class ProductService extends BaseService {
 		return (this.productDao.insertProduct(product) > 0) ? product.getProductNo() : -1;
 	}
 	
+	public int updateProduct(ProductVO product) throws Exception {
+		return this.productDao.updateProduct(product);
+	}
+	
+	public int deleteProduct(int productNo) throws Exception {
+		return this.productDao.deleteProduct(productNo);
+	}
+	
 	public List<CategoryVO> getCategories() throws Exception {
 		return this.productDao.getCategories();
 	}
@@ -81,8 +89,8 @@ public class ProductService extends BaseService {
 		return result;
 	}
 	
-	public List<ProductVO> getSellProducts(String empNo, String stateCd) throws Exception {
-		List<ProductVO> products = this.productDao.getSellProducts(empNo, stateCd);
+	public List<ProductVO> getSellProducts(String empNo) throws Exception {
+		List<ProductVO> products = this.productDao.getSellProducts(empNo);
 		
 		if(products != null) {
 			for(ProductVO product : products) {
