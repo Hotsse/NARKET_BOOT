@@ -1,6 +1,7 @@
 package com.nexon.narket.web.product.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -16,7 +17,8 @@ public class ProductController extends BaseController {
 	}
 	
 	@GetMapping("/list")
-	public String list() throws Exception {		
+	public String list(Model model) throws Exception {
+		model.addAttribute("test", "222222");
 		return "list";
 	}
 	

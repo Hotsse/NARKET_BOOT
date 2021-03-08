@@ -23,6 +23,11 @@ public class ProductService extends BaseService {
 	@Autowired
 	private FileService fileService;
 	
+	/**
+	 * 상품 리스트 조회
+	 * @return ProductVO 의 리스트
+	 * @throws Exception
+	 */
 	public List<ProductVO> getProducts() throws Exception {
 		List<ProductVO> products = this.productDao.getProducts();
 		
