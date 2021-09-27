@@ -2,6 +2,9 @@ package com.nexon.narket.api.product.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,25 +28,34 @@ public class ProductService extends BaseService {
 	
 	/**
 	 * 상품 리스트 조회
+	 * 
 	 * @return ProductVO 의 리스트
 	 * @throws Exception
 	 */
 	public List<ProductVO> getProducts() throws Exception {
+		
 		List<ProductVO> products = this.productDao.getProducts();
 		
-		if(products != null) {
-			for(ProductVO product : products) {
-				ProductVO origin = product;
-				
+		UnaryOperator<ProductVO> 이미지번호_리스트_조회 = (product) -> {
+			
+			try {
 				List<ImgVO> imgs = this.fileService.getImgs(product.getProductNo());
 				List<Integer> imgNos = this.convertImgsToIntList(imgs);
 				product.setImgNos(imgNos);
-				products.set(products.indexOf(origin), product);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
 			}
 			
-		}
+			return product;
+		};
 		
-		return products; 
+		return Optional
+					.ofNullable(products)
+					.get()
+					.stream()
+					.map(이미지번호_리스트_조회)
+					.collect(Collectors.toList()); 
 	}
 	
 	public ProductVO getProduct(int productNo) throws Exception {

@@ -708,3 +708,21 @@ Caused by: java.lang.IllegalStateException: The file is locked: nio:C:/workspace
 	at org.h2.mvstore.FileStore.open(FileStore.java:172)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:381)
 	... 116 more
+2021-03-08 22:08:27 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "STATE" not found; SQL statement:
+SELECT product_no as productNo
+			, state_cd as stateCd
+			, (SELECT state_nm FROM state WHERE state_cd = p.state_cd) as stateNm
+			, category_no as categoryNo
+			, (SELECT category_nm FROM category WHERE category_no = p.category_no) as categoryNm
+			, title as title
+			, content as content
+			, price as price
+			, reg_emp_no as regEmpNo
+			, reg_dtt as regDtt
+			, bump_dtt as bumpDtt
+			, view_cnt as viewCnt
+			, like_cnt as likeCnt
+		FROM product p
+		WHERE use_yn = 'Y'
+		ORDER BY p.bump_dtt DESC [42102-200]
