@@ -1,6 +1,7 @@
 package com.nexon.narket.api.common.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -62,49 +63,53 @@ public class FileService {
 		}
 	}
 	
-	public void uploadImg(int productNo, String empNo, MultipartFile file) throws Exception {
+	public void uploadImg(int productNo, String empNo, MultipartFile file) {
 		
-		// 파일 경로 생성
-		String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")); // 날짜별 디렉토리 분기		
-		UUID uuidFileNm = UUID.randomUUID(); // 파일명 암호화
-		String filePath = today + filePathDelim + uuidFileNm;
-		File fs = new File(fileUploadPath + filePath);
-		
-		// 파일 저장
-		boolean fileSaved = false;
-		if(!fs.exists()) {
+		try {
 			
-			if(fs.getParentFile().mkdirs()) {				
-				// 파일 빈깡통 생성
-				fs.createNewFile();
+			// 파일 경로 생성
+			String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")); // 날짜별 디렉토리 분기		
+			UUID uuidFileNm = UUID.randomUUID(); // 파일명 암호화
+			String filePath = today + filePathDelim + uuidFileNm;
+			File fs = new File(fileUploadPath + filePath);
+			
+			// 파일 저장
+			boolean fileSaved = false;
+			if(!fs.exists()) {
+				
+				if(fs.getParentFile().mkdirs()) {				
+					// 파일 빈깡통 생성
+					fs.createNewFile();
+				}
+				
+				// 빈깡통에 업로드 파일 덮어쓰기
+				file.transferTo(fs);
+				fileSaved = true;
 			}
 			
-			// 빈깡통에 업로드 파일 덮어쓰기
-			file.transferTo(fs);
-			fileSaved = true;
+			// 파일 저장 성공 시, DB 저장
+			if(fileSaved) {
+				
+				// 파일 메타데이터 생성
+				String fileNm = file.getOriginalFilename();
+				long fileSize = file.getSize();
+				
+				ImgVO newImg = ImgVO.builder()
+						.productNo(productNo)
+						.filePath(filePath)
+						.fileNm(fileNm)
+						.fileSize(fileSize)
+						.build();
+				
+				// 파일 메타데이터 DB 저장
+				this.fileDao.insertImg(newImg);
+			}
 		}
-		
-		// 파일 저장 성공 시, DB 저장
-		if(fileSaved) {
-			
-			// 파일 메타데이터 생성
-			String fileNm = file.getOriginalFilename();
-			long fileSize = file.getSize();
-			
-			ImgVO newImg = ImgVO.builder()
-					.productNo(productNo)
-					.filePath(filePath)
-					.fileNm(fileNm)
-					.fileSize(fileSize)
-					.build();
-			
-			// 파일 메타데이터 DB 저장
-			this.fileDao.insertImg(newImg);
+		catch(IOException ioe) {
+			ioe.printStackTrace();
 		}
-		
-		
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
-	
-
 }

@@ -1,6 +1,5 @@
 package com.nexon.narket.api.product.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
@@ -32,42 +31,18 @@ public class ProductService extends BaseService {
 	 * @return ProductVO 의 리스트
 	 * @throws Exception
 	 */
-	public List<ProductVO> getProducts() throws Exception {
-		
-		List<ProductVO> products = this.productDao.getProducts();
-		
-		UnaryOperator<ProductVO> 이미지번호_리스트_조회 = (product) -> {
-			
-			try {
-				List<ImgVO> imgs = this.fileService.getImgs(product.getProductNo());
-				List<Integer> imgNos = this.convertImgsToIntList(imgs);
-				product.setImgNos(imgNos);
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-			
-			return product;
-		};
-		
-		return Optional
-					.ofNullable(products)
-					.get()
-					.stream()
+	public List<ProductVO> getProducts() throws Exception {		
+		return Optional.ofNullable(this.productDao.getProducts())
+			.map(products -> products.stream()
 					.map(이미지번호_리스트_조회)
-					.collect(Collectors.toList()); 
+					.collect(Collectors.toList()))
+			.orElseGet(null);
 	}
 	
-	public ProductVO getProduct(int productNo) throws Exception {
-		ProductVO product = this.productDao.getProduct(productNo);
-		
-		if(product != null) {
-			List<ImgVO> imgs = this.fileService.getImgs(productNo);
-			List<Integer> imgNos = this.convertImgsToIntList(imgs);
-			product.setImgNos(imgNos);
-		}
-		
-		return product;
+	public ProductVO getProduct(int productNo) throws Exception {		
+		return Optional.ofNullable(this.productDao.getProduct(productNo))
+				.map(이미지번호_리스트_조회)
+				.orElseGet(null);
 	}
 	
 	public int insertProduct(ProductVO product) throws Exception {
@@ -90,33 +65,29 @@ public class ProductService extends BaseService {
 		return this.productDao.getStates();
 	}
 	
-
-	private List<Integer> convertImgsToIntList(List<ImgVO> imgs) throws Exception {
-		List<Integer> result = null;
-		if(imgs != null) {
-			result = new ArrayList<Integer>();
-			for(ImgVO img : imgs) result.add(img.getImgNo());
-		}
-		
-		return result;
+	public List<ProductVO> getSellProducts(String empNo) throws Exception {		
+		return Optional.ofNullable(this.productDao.getSellProducts(empNo))
+				.map(products -> products.stream()
+						.map(이미지번호_리스트_조회)
+						.collect(Collectors.toList()))
+				.orElseGet(null); 
 	}
 	
-	public List<ProductVO> getSellProducts(String empNo) throws Exception {
-		List<ProductVO> products = this.productDao.getSellProducts(empNo);
+	private UnaryOperator<ProductVO> 이미지번호_리스트_조회 = (product) -> {
 		
-		if(products != null) {
-			for(ProductVO product : products) {
-				ProductVO origin = product;
-				
-				List<ImgVO> imgs = this.fileService.getImgs(product.getProductNo());
-				List<Integer> imgNos = this.convertImgsToIntList(imgs);
-				product.setImgNos(imgNos);
-				products.set(products.indexOf(origin), product);
-			}
+		try {
+			List<ImgVO> imgs = this.fileService.getImgs(product.getProductNo());
+			List<Integer> imgNos = imgs.stream()
+					.map(img -> img.getImgNo())
+					.collect(Collectors.toList());
 			
+			product.setImgNos(imgNos);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
 		}
 		
-		return products; 
-	}
+		return product;
+	};
 
 }

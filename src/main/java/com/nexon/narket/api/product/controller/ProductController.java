@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
 import com.nexon.narket.api.common.service.FileService;
@@ -50,7 +49,10 @@ public class ProductController extends BaseController {
 	}
 	
 	@PostMapping("/write")
-	public ResponseEntity<Void> write(ProductVO product, HttpServletRequest req, MultipartRequest mreq) throws Exception {
+	public ResponseEntity<Void> write(
+			ProductVO product
+			, HttpServletRequest req
+			, MultipartRequest mreq) throws Exception {
 		
 		// 기본 데이터 추가
 		product.setStateCd(StateEnum.INPROGRESS.getCode());
@@ -63,17 +65,17 @@ public class ProductController extends BaseController {
 		int productNo = this.productService.insertProduct(product);
 		
 		if(productNo > 0) {
-			List<MultipartFile> files = mreq.getFiles("imgs");
-			for(MultipartFile file : files) {
-				this.fileService.uploadImg(productNo, empNo, file);
-			}
+			mreq.getFiles("imgs").stream()
+				.forEach(file -> this.fileService.uploadImg(productNo, empNo, file));
 		}
 		
 		return ResponseEntity.created(null).build();
 	}
 	
 	@PostMapping("/update")
-	public ResponseEntity<ProductVO> update(ProductVO product, HttpServletRequest req) throws Exception {
+	public ResponseEntity<ProductVO> update(
+			ProductVO product
+			, HttpServletRequest req) throws Exception {
 		
 		int productNo = product.getProductNo(); 
 		ProductVO origin = this.productService.getProduct(productNo);
@@ -92,7 +94,9 @@ public class ProductController extends BaseController {
 	}
 	
 	@PostMapping("/delete/{productNo}")
-	public ResponseEntity<Void> delete(@PathVariable(name = "productNo", required = true) int productNo, HttpServletRequest req) throws Exception {
+	public ResponseEntity<Void> delete(
+			@PathVariable(name = "productNo", required = true) int productNo
+			, HttpServletRequest req) throws Exception {
 		
 		ProductVO product = this.productService.getProduct(productNo);
 		// 권한 체크
@@ -122,7 +126,8 @@ public class ProductController extends BaseController {
 	}
 	
 	@GetMapping("/img/{productNo}/{imgNo}")
-	public void getImg(@PathVariable(name = "productNo", required = true) int productNo
+	public void getImg(
+			@PathVariable(name = "productNo", required = true) int productNo
 			, @PathVariable(name = "imgNo", required = true) int imgNo
 			, HttpServletResponse res) throws Exception {
 		
