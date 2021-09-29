@@ -1,6 +1,7 @@
 package com.nexon.narket.api.common.service;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.nexon.narket.api.common.dao.FileDao;
 import com.nexon.narket.api.common.vo.ImgVO;
+
 @Service
 public class FileService {
 	
@@ -48,14 +50,22 @@ public class FileService {
 			FileSystemResource imgFile = new FileSystemResource(filePath.replace("\\\\", "/"));
 			
 			String mediaType = MediaType.ALL_VALUE;
-			if(img.getFileNm().contains(".jpg") || img.getFileNm().contains(".JPG")) {
-				mediaType = MediaType.IMAGE_JPEG_VALUE;
-			}
-			else if(img.getFileNm().contains(".png") || img.getFileNm().contains(".PNG")) {
-				mediaType = MediaType.IMAGE_PNG_VALUE;
-			}
-			else if(img.getFileNm().contains(".gif") || img.getFileNm().contains(".gif")) {
-				mediaType = MediaType.IMAGE_GIF_VALUE;
+			switch (img.getFileNm()) {
+				case ".jpg":
+				case ".JPG":
+					mediaType = MediaType.IMAGE_JPEG_VALUE;
+					break;
+				case ".png":
+				case ".PNG":
+					mediaType = MediaType.IMAGE_PNG_VALUE;
+					break;
+				case ".gif":
+				case ".GIF":
+					mediaType = MediaType.IMAGE_GIF_VALUE;
+					break;
+				default:
+					mediaType = MediaType.ALL_VALUE;
+					break;
 			}
 			
 			res.setContentType(mediaType);
